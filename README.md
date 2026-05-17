@@ -18,6 +18,7 @@ greenlight/
 ├── cmd/
 │   └── api/
 │       └── main.go
+│       └── healthcheck.go
 ├── internal/     # Internal packages (DB, validation, mail)
 ├── migrations/   # SQL migration files
 ├── remote/       # Production server configuration
