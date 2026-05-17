@@ -36,5 +36,6 @@ greenlight/
 | Chapter | Topic | Status |
 |---------|-------|--------|
 | 2.1 | Project setup and skeleton structure | ✅ |
+| 2.2 | A Basic HTTP Server.                 | ✅ |
 ```
 
