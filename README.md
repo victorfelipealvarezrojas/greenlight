@@ -32,6 +32,22 @@ greenlight/
 - `hey` — Load testing
 - `git` — Version control
 
+## Ejecución
+
+### Ejecutar con configuración por defecto
+
+- `go run ./cmd/api`
+- Arranca el servidor en el puerto `4000`
+- Usa el entorno `development`
+
+### Ejecutar con parámetros
+
+- `go run ./cmd/api -port=8080 -env=production`
+- Reemplaza `8080` por el puerto deseado
+- Usa el entorno `production`, `staging` o `development`
+
+> Nota: los flags disponibles son `-port` y `-env`.
+
 ## Progress
 
 | Chapter | Topic | Status |

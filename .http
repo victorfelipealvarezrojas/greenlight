@@ -1,0 +1,9 @@
+# API Greenlight — HTTP Requests
+# Requiere extensión REST Client en VSCode (humao.rest-client)
+# Ejecutar: click en "Send Request" sobre cada bloque
+# Base URL Default: http://localhost:4000
+# ---
+
+### Healthcheck
+GET http://localhost:4000/v1/healthcheck
+
