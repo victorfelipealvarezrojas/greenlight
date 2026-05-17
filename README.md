@@ -8,7 +8,7 @@ Built with Go following [Let's Go Further](https://lets-go-further.alexedwards.n
 
 - Go 1.23
 - PostgreSQL
-- httprouter
+- httprouter (se utiliza el paquete de terceros httprouter como enrutador, en lugar de usar http.ServeMux de la biblioteca estándar.)
 
 ## Project Structure
 
@@ -32,6 +32,14 @@ greenlight/
 - `hey` — Load testing
 - `git` — Version control
 
+## Setup
+
+```bash
+    git clone https://github.com/valvarez/greenlight
+    cd greenlight
+    go mod download
+```
+
 ## Ejecución
 
 ### Ejecutar con configuración por defecto
@@ -48,11 +56,25 @@ greenlight/
 
 > Nota: los flags disponibles son `-port` y `-env`.
 
+## Endpoints
+
+**Health**
+| Method | URL | Action |
+|--------|-----|--------|
+| GET | /v1/healthcheck | Show application information |
+
+**Movies**
+| Method | URL | Action |
+|--------|-----|--------|
+| POST | /v1/movies | Create a new movie |
+| GET | /v1/movies/:id | Show a specific movie |
+
 ## Progress
 
 | Chapter | Topic | Status |
 |---------|-------|--------|
 | 2.1 | Project setup and skeleton structure | ✅ |
 | 2.2 | A Basic HTTP Server.                 | ✅ |
+| 2.3 | API Endpoints and RESTful Routing    | ✅ |
 ```
 

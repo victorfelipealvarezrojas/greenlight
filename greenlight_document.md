@@ -71,9 +71,12 @@ hey -n 1000 -c 100 localhost:4000/v1/healthcheck
 
 **Por qué se usa:** El router estándar de Go no soporta parámetros en rutas (`:id`) ni diferenciación por método HTTP de forma limpia. `httprouter` agrega eso con overhead mínimo.
 
+**Nota:** desde Go 1.22 el router estándar (`net/http`) soporta parámetros en rutas y diferenciación por método HTTP, reduciendo la necesidad de httprouter para proyectos simples,
+pero la limitación de 404/405 en texto plano persiste
+
 **Instalación:**
 ```bash
-go get github.com/julienschmidt/httprouter
+go get github.com/julienschmidt/httprouter@v1 
 ```
 
 **Ejemplo:**
