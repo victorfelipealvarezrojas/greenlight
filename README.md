@@ -73,8 +73,9 @@ greenlight/
 
 | Chapter | Topic | Status |
 |---------|-------|--------|
-| 2.1 | Project setup and skeleton structure | ✅ |
-| 2.2 | A Basic HTTP Server.                 | ✅ |
-| 2.3 | API Endpoints and RESTful Routing    | ✅ |
+| 2.1 | Project setup and skeleton structure                  | ✅ |
+| 2.2 | A Basic HTTP Server.                                  | ✅ |
+| 2.3 | API Endpoints and RESTful Routing                     | ✅ |
+| 3.  | Sending JSON Responses & Fixed-Format JSON            | ✅ |
 ```
 
