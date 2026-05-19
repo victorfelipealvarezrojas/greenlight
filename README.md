@@ -78,5 +78,6 @@ greenlight/
 | 2.3 | API Endpoints and RESTful Routing                     | ✅ |
 | 3.  | Sending JSON Responses & Fixed-Format JSON            | ✅ |
 | 3.2 | JSON Encoding                                         | ✅ |
+| 3.3 | Encoding Structs                                      | ✅ |
 ```
 
