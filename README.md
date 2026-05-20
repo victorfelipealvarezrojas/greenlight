@@ -79,5 +79,6 @@ greenlight/
 | 3.  | Sending JSON Responses & Fixed-Format JSON            | ✅ |
 | 3.2 | JSON Encoding                                         | ✅ |
 | 3.3 | Encoding Structs                                      | ✅ |
+| 3.4 | Formatting and Enveloping Responses                   | ✅ |
 ```
 

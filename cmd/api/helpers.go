@@ -18,12 +18,16 @@ func (app *application) readIDParam(r *http.Request) (int64, error) {
 	return id, nil
 }
 
-func (app *application) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
+type envelope map[string]any
+
+func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
 	// Encode the data to JSON, returning the error if there was one.
 	//NOTE: podria usar json.Encoder [json.NewEncoder(w).Encode(data)] que escribe directamente en el ResponseWriter,
 	// y evitaria erscribir el w.Write que es un ResponseWriter, pero no e sposible configurar encabezados http antes de escribir la respuesta,
 	// por eso se opta por usar json.Marshal y luego escribir el w.Write
 	js, err := json.Marshal(data)
+
+	// otra opcion es js, err := json.MarshalIndent(data, "", "\t") que agrega saltos de linea y tabulaciones para hacer el JSON mas legible, pero ocupa mas espacio
 
 	if err != nil {
 		return err
@@ -39,5 +43,6 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data any, h
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write(js) // esto genera la respuesta HTTP, por eso no se pueden escribir encabezados después de esta línea
+
 	return nil
 }
