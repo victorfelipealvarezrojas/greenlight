@@ -81,5 +81,6 @@ greenlight/
 | 3.3 | Encoding Structs                                      | ✅ |
 | 3.4 | Formatting and Enveloping Responses                   | ✅ |
 | 3.5 | Advanced JSON Customization                           | ✅ |
+| 3.6 | Sending Error Messages                                | ✅ |
 ```
 
