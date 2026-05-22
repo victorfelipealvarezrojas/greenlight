@@ -17,12 +17,21 @@ greenlight/
 ├── bin/          # Compiled binaries
 ├── cmd/
 │   └── api/
-│       └── main.go
-│       └── healthcheck.go
-├── internal/     # Internal packages (DB, validation, mail)
+│       ├── errors.go
+│       ├── healthcheck.go
+│       ├── helpers.go
+│       ├── main.go
+│       ├── middleware.go
+│       ├── movies.go
+│       └── routes.go
+├── internal/     # Internal packages
+│   └── data/
+│       ├── movies.go
+│       └── runtime.go
 ├── migrations/   # SQL migration files
 ├── remote/       # Production server configuration
 ├── go.mod
+├── go.sum
 └── Makefile
 ```
 
@@ -82,5 +91,6 @@ greenlight/
 | 3.4 | Formatting and Enveloping Responses                   | ✅ |
 | 3.5 | Advanced JSON Customization                           | ✅ |
 | 3.6 | Sending Error Messages                                | ✅ |
+| 4.0 | Parsing JSON Requests                                 | ✅ |
 ```
 
