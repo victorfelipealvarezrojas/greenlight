@@ -92,5 +92,7 @@ greenlight/
 | 3.5 | Advanced JSON Customization                           | ✅ |
 | 3.6 | Sending Error Messages                                | ✅ |
 | 4.0 | Parsing JSON Requests                                 | ✅ |
+| 4.1 | JSON Decoding                                         | ✅ |
+| 4.2 | Managing Bad Requests                                 | ✅ |
 ```
 
