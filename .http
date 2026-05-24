@@ -15,8 +15,8 @@ POST http://localhost:4000/v1/movies
 Content-Type: application/json
 
 {
-  "title": "Star Wars: The Rise of Skywalker",
-  "year": 0,
+  "title": "A",
+  "year": 2000,
   "runtime": "136 mins",
   "genres": ["Action", "Sci-Fi"]
 }
