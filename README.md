@@ -95,5 +95,6 @@ greenlight/
 | 4.1 | JSON Decoding                                         | ✅ |
 | 4.2 | Managing Bad Requests                                 | ✅ |
 | 4.3 | Restricting Inputs.                                   | ✅ |
+| 4.4 | Custom JSON Decoding.                                 | ✅ |
 ```
 

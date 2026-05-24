@@ -17,7 +17,7 @@ Content-Type: application/json
 {
   "title": "Star Wars: The Rise of Skywalker",
   "year": 0,
-  "runtime": 136,
+  "runtime": "136 mins",
   "genres": ["Action", "Sci-Fi"]
 }
 
