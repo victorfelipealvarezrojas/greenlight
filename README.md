@@ -235,6 +235,42 @@ postgres:// greenlight : pa55word @ localhost / greenlight ? sslmode=disable
          POSTGRES_USER  password    host        POSTGRES_DB
 ```
 
+```markdown
+## Connection Pool — Métodos de configuración
+
+### SetMaxOpenConns
+Límite máximo de conexiones abiertas (en uso + idle) en el pool.
+Por defecto ilimitado. Si se alcanza el límite, las nuevas consultas esperan
+hasta que una conexión quede disponible.
+
+### SetMaxIdleConns
+Límite máximo de conexiones idle (abiertas pero sin usar) que el pool mantiene.
+Por defecto 2. Conexiones idle por encima del límite se cierran automáticamente.
+
+### SetConnMaxLifetime
+Tiempo máximo de vida de una conexión — cuánto tiempo puede existir
+antes de ser cerrada y reemplazada, independiente de si está en uso o idle.
+Por defecto ilimitado.
+
+### SetConnMaxIdleTime
+Tiempo máximo que una conexión puede estar idle antes de ser cerrada.
+Por defecto ilimitado. Útil para liberar conexiones en períodos de baja carga.
+
+---
+
+**Regla general para producción:**
+```go
+db.SetMaxOpenConns(25)
+db.SetMaxIdleConns(25)
+db.SetConnMaxLifetime(5 * time.Minute)
+db.SetConnMaxIdleTime(5 * time.Minute)
+```
+Los valores óptimos dependen del hardware y la carga — requieren benchmarking.
+
+go run ./cmd/api -db-max-open-conns=50 -db-max-idle-conns=50 -db-max-idle-time=2h30m
+
+```
+
 
 | Chapter | Topic | Status |
 |---------|-------|--------|
@@ -256,5 +292,6 @@ postgres:// greenlight : pa55word @ localhost / greenlight ? sslmode=disable
 | 5   | Database Setup and Configuration                      | ✅ |
 | 5.1 | Setting up PostgreSQL                                 | ✅ |
 | 5.2 | Connecting to PostgreSQL                              | ✅ |
+| 5.3 | Configuring the Database Connection                   | ✅ |
 ```
 
