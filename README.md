@@ -130,9 +130,10 @@ Si Docker no tiene `container_name` explícito genera uno automático tipo `gree
 
 ---
 
+````markdown
 ## Configuración inicial de la base de datos
 
-Conectado a psql, ejecutar en orden:
+Conectado a psql con `admin`, ejecutar en orden:
 
 ```sql
 -- usuario con permisos limitados solo a greenlight (buena práctica — no usar el superusuario)
@@ -140,6 +141,17 @@ CREATE ROLE greenlight WITH LOGIN PASSWORD 'pa55word';
 
 -- extensión para strings case-insensitive (necesaria para emails de usuarios)
 CREATE EXTENSION IF NOT EXISTS citext;
+
+-- puede ser necesario configurarlo como propietario
+ALTER DATABASE greenlight OWNER TO greenlight;
+
+-- si no funciono el paso anterior utilzar permiso especifico 
+GRANT CREATE ON DATABASE greenlight TO greenlight;
+
+-- ******en caso de que los 2 passo anteriores no funciones, podria ser ademas necesario pero requiere un admin y cambair de usuario****
+-- permisos sobre el schema public — necesario para que greenlight pueda crear tablas
+-- debe ejecutarse con admin, no con greenlight asi que en este punto cambair al user admin
+GRANT ALL ON SCHEMA public TO greenlight;
 ```
 
 ### Verificar
@@ -152,8 +164,17 @@ CREATE EXTENSION IF NOT EXISTS citext;
 ### citext
 Agrega un tipo de dato que ignora mayúsculas al comparar. Sin él, `user@gmail.com` y `User@Gmail.com` serían distintos — con él son iguales. Se usa en la columna de email para evitar registros duplicados por diferencia de capitalización.
 
+---
 
-## Comandos dentro de psql
+## Comandos psql
+
+```bash
+# conectarse con superusuario (para operaciones de administración)
+docker exec -it progress-db psql -U admin -d greenlight
+
+# conectarse con usuario limitado (uso normal)
+docker exec -it progress-db psql -U greenlight -d greenlight
+```
 
 ```sql
 \l              -- listar bases de datos
@@ -161,8 +182,9 @@ Agrega un tipo de dato que ignora mayúsculas al comparar. Sin él, `user@gmail.
 \dt             -- listar tablas
 \d nombre_tabla -- describir una tabla
 \q              -- salir
-\du             -- lista roles — debe aparecer greenlight sin atributos de superusuario
-\dx             -- lista extensiones — debe aparecer citext
+\du             -- listar roles
+\dx             -- listar extensiones
+\d movies       -- estructura de la tabla
 ```
 
 ---
@@ -269,6 +291,88 @@ Los valores óptimos dependen del hardware y la carga — requieren benchmarking
 
 go run ./cmd/api -db-max-open-conns=50 -db-max-idle-conns=50 -db-max-idle-time=2h30m
 
+
+
+
+## Migración
+
+### Concepto
+
+Cada cambio al schema de la DB se representa como un par de archivos numerados secuencialmente:
+
+```
+000001_create_movies_table.up.sql    → aplica el cambio
+000001_create_movies_table.down.sql  → revierte el cambio
+```
+
+El tool de migración registra qué migraciones ya se aplicaron — solo ejecuta las pendientes.
+
+**Ventajas:**
+- El schema vive en el repositorio junto al código
+- Se puede replicar el schema exacto en cualquier entorno
+- Se puede hacer rollback de cualquier cambio
+
+---
+
+### Instalación — migrate tool
+
+**macOS:**
+```bash
+brew install golang-migrate
+```
+
+**Linux:**
+```bash
+cd /tmp
+curl -L https://github.com/golang-migrate/migrate/releases/download/v4.16.2/migrate.linux-amd64.tar.gz | tar xvz
+mv migrate ~/go/bin/
+```
+
+**Verificar instalación:**
+```bash
+migrate -version
+```
+
+---
+
+````markdown
+### Crear archivos de migración
+
+```bash
+migrate create -seq -ext=.sql -dir=./migrations nombre_migracion
+# genera:
+# migrations/000001_nombre_migracion.up.sql
+# migrations/000001_nombre_migracion.down.sql
+
+# flags:
+# -seq  → numeración secuencial (0001, 0002...) en lugar de Unix timestamp
+# -ext  → extensión de los archivos generados
+# -dir  → directorio donde se guardan (se crea automáticamente si no existe)
+# nombre_migracion → label descriptivo que indica el contenido
+```
+
+**Regla importante:** cada migración contiene solo el cambio incremental — nunca repite
+cambios de migraciones anteriores. El tool aplica los archivos en orden secuencial
+y registra cuáles ya ejecutó, saltándolos en ejecuciones posteriores.
+
+```
+000001_create_movies_table       → crea tabla movies
+000002_add_movies_check_constraints → agrega constraints a movies
+000003_add_users_table           → crea tabla users (no repite movies)
+```
+
+Cambio nuevo → migración nueva. Nunca se modifica una migración ya aplicada.
+````
+
+### Ejecutar migraciones
+
+```bash
+# aplicar todas las pendientes (GREENLIGHT_DB_DSN es la credencial que fue agregada a las variables de entorno)
+migrate -path=./migrations -database=$GREENLIGHT_DB_DSN up
+
+# revertir la última
+migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
+```
 ```
 
 
@@ -293,5 +397,8 @@ go run ./cmd/api -db-max-open-conns=50 -db-max-idle-conns=50 -db-max-idle-time=2
 | 5.1 | Setting up PostgreSQL                                 | ✅ |
 | 5.2 | Connecting to PostgreSQL                              | ✅ |
 | 5.3 | Configuring the Database Connection                   | ✅ |
+| 6.  | SQL Migrations                                        | ✅ |
+| 6.1 | An Overview of SQL Migrations                         | ✅ |
+| 6.2 | Working with SQL Migrations                           | ✅ |
 ```
 
