@@ -39,7 +39,24 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	fmt.Fprintf(w, "%+v\n", input)
+	err = app.models.Movies.Insert(movie)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// Al enviar una respuesta HTTP con un código de estado 201 Created, es una buena práctica incluir un encabezado
+	// Location que contenga la URL del nuevo recurso que se ha creado. Esto permite a los clientes saber dónde pueden acceder al nuevo recurso.
+	headers := make(http.Header)
+	headers.Set("Location", fmt.Sprintf("/v1/movies/%d", movie.ID))
+
+	// Envíe una respuesta JSON al cliente que incluya los detalles de la película recién creada,
+	// junto con el código de estado 201 Created y el encabezado Location.
+	err = app.writeJSON(w, http.StatusCreated, envelope{"movie": movie}, headers)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
 }
 
 func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {

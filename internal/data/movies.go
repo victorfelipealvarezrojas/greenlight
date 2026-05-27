@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/lib/pq"
 	"github.com/valvarez/greenlight/internal/validator"
 )
 
@@ -37,7 +38,20 @@ type MovieModel struct {
 }
 
 func (m MovieModel) Insert(movie *Movie) error {
-	return nil
+	query := `
+		INSERT INTO movies (title, year, runtime, genres)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, created_at, version`
+
+	args := []any{movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres)}
+
+	// Utilice el método QueryRow() para ejecutar la consulta SQL en nuestro grupo de conexiones, pasando el slice de argumentos.
+	// Scan escribe los valores generados por PostgreSQL (id, created_at, version)
+	return m.BD.QueryRow(query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
+
+	// NOTE: Debido a que la firma del método Insert() toma un puntero *Movie como parámetro, cuando
+	// a Scan() es llamado para leer los datos generados por el sistema; estamos actualizando los valores en la ubicación
+	// el parámetro apunta a. Esencialmente, nuestro método Insert() muta la estructura Movie.
 }
 
 func (m MovieModel) Get(id int64) (*Movie, error) {
