@@ -1,6 +1,7 @@
 package data
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/valvarez/greenlight/internal/validator"
@@ -11,13 +12,9 @@ type Movie struct {
 	CreatedAt time.Time `json:"-"` // la directiva "-" indica que este campo no se incluirá en la representación JSON de la película
 	Title     string    `json:"title"`
 	Year      int32     `json:"year,omitempty"` // la directiva "omitempty" indica que este campo se omitirá de la representación JSON si su valor es 0 para su tipo
-	// Runtime usa tipo Runtime (no int32 directo) para que el encoder JSON
-	// invoque automáticamente MarshalJSON() y formatee el valor como "X mins".
-	// La directiva "string" en el tag es redundante aquí porque MarshalJSON
-	// ya controla completamente la representación — Runtime se encarga solo.
-	Runtime Runtime  `json:"runtime,omitempty"`
-	Genres  []string `json:"genres,omitempty"`
-	Version int32    `json:"version"`
+	Runtime   Runtime   `json:"runtime,omitempty"`
+	Genres    []string  `json:"genres,omitempty"`
+	Version   int32     `json:"version"`
 }
 
 func ValidateMovie(v *validator.Validator, movie *Movie) {
@@ -32,4 +29,27 @@ func ValidateMovie(v *validator.Validator, movie *Movie) {
 	v.Check(len(movie.Genres) >= 1, "genres", "must contain at least 1 genre")
 	v.Check(len(movie.Genres) <= 5, "genres", "must not contain more than 5 genres")
 	v.Check(validator.Unique(movie.Genres), "genres", "must not contain duplicate values")
+}
+
+// Defina un tipo de estructura MovieModel que englobe un grupo de conexiones sql.DB.
+type MovieModel struct {
+	BD *sql.DB
+}
+
+func (m MovieModel) Insert(movie *Movie) error {
+	return nil
+}
+
+func (m MovieModel) Get(id int64) (*Movie, error) {
+	return nil, nil
+}
+
+// Add a placeholder method for updating a specific record in the movies table.
+func (m MovieModel) Update(movie *Movie) error {
+	return nil
+}
+
+// Add a placeholder method for deleting a specific record from the movies table.
+func (m MovieModel) Delete(id int64) error {
+	return nil
 }

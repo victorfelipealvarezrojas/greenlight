@@ -400,5 +400,7 @@ migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
 | 6.  | SQL Migrations                                        | ✅ |
 | 6.1 | An Overview of SQL Migrations                         | ✅ |
 | 6.2 | Working with SQL Migrations                           | ✅ |
+| 7.  | CRUD Operations                                       | ✅ |
+| 7.1 | Setting up the Movie Model                            | ✅ |
 ```
 
