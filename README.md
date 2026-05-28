@@ -406,5 +406,7 @@ migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
 | 7.3 | Fetching a Movie                                      | ✅ |
 | 7.3 | Updating a Movie                                      | ✅ |
 | 7.4 | Deleting a Movie                                      | ✅ |
+| 8.  | Advanced CRUD Operations                              | ✅ |
+| 8.1 | Handling Partial Updates                              | ✅ |
 ```
 

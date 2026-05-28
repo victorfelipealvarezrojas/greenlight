@@ -97,12 +97,14 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// estructura de entrada en el request body JSON
+	// Utilice punteros para los campos Título, Año y Tiempo de ejecución.
+	// Esto nos permitirá detectar si el cliente ha incluido o no un campo específico en el JSON de entrada.
+	// Si el cliente no incluye un campo, entonces el valor del puntero será nulo (nil) y si lo envia vacio entonces el valor del puntero será un string vacio,
 	var input struct {
-		Title   string       `json:"title"`
-		Year    int32        `json:"year"`
-		Runtime data.Runtime `json:"runtime"`
-		Genres  []string     `json:"genres"`
+		Title   *string       `json:"title"` // Esto será nulo si no hay una clave correspondiente en el JSON.
+		Year    *int32        `json:"year"`
+		Runtime *data.Runtime `json:"runtime"`
+		Genres  []string      `json:"genres"` // No necesita cambiar porque los slice ya tienen el valor cero nil.
 	}
 	// Leo los datos del cuerpo de la solicitud JSON en la estructura de entrada.
 	err = app.readJSON(w, r, &input)
@@ -111,11 +113,19 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// Actualizo los campos de la película (registro) con los nuevos valores del JSON.
-	movie.Title = input.Title
-	movie.Year = input.Year
-	movie.Runtime = input.Runtime
-	movie.Genres = input.Genres
+	if input.Title != nil {
+		movie.Title = *input.Title
+	}
+
+	if input.Year != nil {
+		movie.Year = *input.Year
+	}
+	if input.Runtime != nil {
+		movie.Runtime = *input.Runtime
+	}
+	if input.Genres != nil {
+		movie.Genres = input.Genres
+	}
 
 	v := validator.New()
 	if data.ValidateMovie(v, movie); !v.Valid() {
