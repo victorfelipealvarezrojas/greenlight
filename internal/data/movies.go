@@ -109,7 +109,28 @@ func (m MovieModel) Update(movie *Movie) error {
 	return m.BD.QueryRow(query, args...).Scan(&movie.Version)
 }
 
-// Add a placeholder method for deleting a specific record from the movies table.
 func (m MovieModel) Delete(id int64) error {
+
+	if id < 1 {
+		return ErrRecordNotFound
+	}
+
+	query := `
+		DELETE FROM movies
+		WHERE id = $1`
+
+	result, err := m.BD.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
 	return nil
 }

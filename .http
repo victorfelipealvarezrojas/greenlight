@@ -43,3 +43,6 @@ Content-Type: application/json
   "runtime": "96 mins",
   "genres": ["Drama", "Comedy", "Teen3"]
 }
+
+### deleteMovieHandler
+DELETE http://localhost:4000/v1/movies/1
