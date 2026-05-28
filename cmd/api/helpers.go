@@ -58,7 +58,10 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields() // configura comportamiento, no lee nada
 
-	// Decode the request body to the destination.
+	// decoder por medio de reflexión escribe los datos decodificados en la variable (dst) que se le pasa como puntero. y valida el formato del JSON,
+	// si es incorrecto devuelve un error que se puede analizar para dar un mensaje de error más específico al cliente.
+	// ese error puede ser un error de sintaxis, un error de tipo, un error de tamaño, un error de campo desconocido, etc.
+	// pero es decoder quien hace todo ese trabajo.
 	err := dec.Decode(dst)
 	if err != nil {
 

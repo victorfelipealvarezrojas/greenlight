@@ -404,5 +404,6 @@ migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
 | 7.1 | Setting up the Movie Model                            | ✅ |
 | 7.2 | Creating a New Movie                                  | ✅ |
 | 7.3 | Fetching a Movie                                      | ✅ |
+| 7.3 | Updating a Movie                                      | ✅ |
 ```
 
