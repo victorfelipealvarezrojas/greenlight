@@ -14,7 +14,7 @@ Built with Go following [Let's Go Further](https://lets-go-further.alexedwards.n
 
 ```
 greenlight/
-├── bin/          # Compiled binaries
+├── bin/                     # Compiled binaries
 ├── cmd/
 │   └── api/
 │       ├── errors.go
@@ -24,12 +24,16 @@ greenlight/
 │       ├── middleware.go
 │       ├── movies.go
 │       └── routes.go
-├── internal/     # Internal packages
-│   └── data/
-│       ├── movies.go
-│       └── runtime.go
-├── migrations/   # SQL migration files
-├── remote/       # Production server configuration
+├── internal/                # Internal packages
+│   ├── data/
+│   │   ├── models.go
+│   │   ├── movies.go
+│   │   └── runtime.go
+│   └── validator/
+│       └── validator.go
+├── migrations/              # SQL migration files
+├── remote/                  # Production server configuration
+├── docker-compose.yml       # Docker Compose configuration
 ├── go.mod
 ├── go.sum
 └── Makefile
@@ -77,6 +81,8 @@ greenlight/
 |--------|-----|--------|
 | POST | /v1/movies | Create a new movie |
 | GET | /v1/movies/:id | Show a specific movie |
+| PUT | /v1/movies/:id | Update an existing movie |
+| DELETE | /v1/movies/:id | Delete a movie |
 
 
 ## Progress
@@ -248,7 +254,6 @@ echo $GREENLIGHT_DB_DSN
 ```
 
 
-
 # Estructura:
 
 ```
@@ -257,7 +262,6 @@ postgres:// greenlight : pa55word @ localhost / greenlight ? sslmode=disable
          POSTGRES_USER  password    host        POSTGRES_DB
 ```
 
-```markdown
 ## Connection Pool — Métodos de configuración
 
 ### SetMaxOpenConns
@@ -290,8 +294,6 @@ db.SetConnMaxIdleTime(5 * time.Minute)
 Los valores óptimos dependen del hardware y la carga — requieren benchmarking.
 
 go run ./cmd/api -db-max-open-conns=50 -db-max-idle-conns=50 -db-max-idle-time=2h30m
-
-
 
 
 ## Migración
@@ -333,9 +335,6 @@ mv migrate ~/go/bin/
 migrate -version
 ```
 
----
-
-````markdown
 ### Crear archivos de migración
 
 ```bash
@@ -408,5 +407,6 @@ migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
 | 7.4 | Deleting a Movie                                      | ✅ |
 | 8.  | Advanced CRUD Operations                              | ✅ |
 | 8.1 | Handling Partial Updates                              | ✅ |
+| 8.2 | Optimistic Concurrency Control                        | ✅ |
 ```
 
