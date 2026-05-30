@@ -92,10 +92,11 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 
 func (m MovieModel) Update(movie *Movie) error {
 
+	// Agregue la cláusula 'AND versión = $6' a la consulta SQL.
 	query := `
 		UPDATE movies
 		SET title = $1, year = $2, runtime = $3, genres = $4, version = version + 1
-		WHERE id = $5
+		WHERE id = $5 AND version = $6
 		RETURNING version`
 
 	args := []any{
@@ -104,9 +105,22 @@ func (m MovieModel) Update(movie *Movie) error {
 		movie.Runtime,
 		pq.Array(movie.Genres),
 		movie.ID,
+		movie.Version, // Agrega la versión de la película esperada.
 	}
 
-	return m.BD.QueryRow(query, args...).Scan(&movie.Version)
+	// Ejecutar la consulta SQL. Si no se pudo encontrar ninguna fila coincidente, conocemos la película.
+	// la versión ha cambiado (o el registro ha sido eliminado) y volvemos a nuestra versión personalizada
+	// Error ErrEditConflict.
+	err := m.BD.QueryRow(query, args...).Scan(&movie.Version)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+	return nil
 }
 
 func (m MovieModel) Delete(id int64) error {

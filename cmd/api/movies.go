@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/valvarez/greenlight/internal/data"
 	"github.com/valvarez/greenlight/internal/validator"
@@ -97,6 +98,15 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// Si la solicitud contiene un encabezado X-Expected-Version, verifique que la película
+	// La versión en la base de datos coincide con la versión esperada especificada en el encabezado.
+	if r.Header.Get("X-Expected-Version") != "" {
+		if strconv.Itoa(int(movie.Version)) != r.Header.Get("X-Expected-Version") {
+			app.editConflictResponse(w, r)
+			return
+		}
+	}
+
 	// Utilice punteros para los campos Título, Año y Tiempo de ejecución.
 	// Esto nos permitirá detectar si el cliente ha incluido o no un campo específico en el JSON de entrada.
 	// Si el cliente no incluye un campo, entonces el valor del puntero será nulo (nil) y si lo envia vacio entonces el valor del puntero será un string vacio,
@@ -135,7 +145,12 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 
 	err = app.models.Movies.Update(movie)
 	if err != nil {
-		app.serverErrorResponse(w, r, err)
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
 		return
 	}
 
