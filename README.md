@@ -412,5 +412,6 @@ migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
 | 8.4 | Filtering, Sorting, and Pagination                    | ✅ |
 | 8.4 | Filtering, Sorting, and Pagination                    | ✅ |
 | 9.  | Parsing Query String Parameters.                      | ✅ |
+| 9.4 | Filtering List                                        | ✅ |
 ```
 
