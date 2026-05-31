@@ -410,5 +410,7 @@ migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
 | 8.2 | Optimistic Concurrency Control                        | ✅ |
 | 8.3 | Managing SQL Query Timeouts                           | ✅ |
 | 8.4 | Filtering, Sorting, and Pagination                    | ✅ |
+| 8.4 | Filtering, Sorting, and Pagination                    | ✅ |
+| 9.  | Parsing Query String Parameters.                      | ✅ |
 ```
 
