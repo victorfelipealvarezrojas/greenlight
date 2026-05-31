@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"time"
@@ -46,9 +47,12 @@ func (m MovieModel) Insert(movie *Movie) error {
 
 	args := []any{movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres)}
 
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
 	// Utilice el método QueryRow() para ejecutar la consulta SQL en nuestro grupo de conexiones, pasando el slice de argumentos.
 	// Scan escribe los valores generados por PostgreSQL (id, created_at, version)
-	return m.BD.QueryRow(query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
+	return m.BD.QueryRowContext(ctx, query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
 
 	// NOTE: Debido a que la firma del método Insert() toma un puntero *Movie como parámetro, cuando
 	// a Scan() es llamado para leer los datos generados por el sistema; estamos actualizando los valores en la ubicación
@@ -68,7 +72,14 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 
 	var movie Movie
 
-	err := m.BD.QueryRow(query, id).Scan(
+	// Utilice la función context.WithTimeout() para crear un contexto.Context que lleve un
+	// Fecha límite de tiempo de espera de 3 segundos.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+	// llamar a la función cancel() para liberar los recursos asociados con el contexto una vez que se complete la consulta.
+	defer cancel()
+
+	err := m.BD.QueryRowContext(ctx, query, id).Scan(
 		&movie.ID,
 		&movie.CreatedAt,
 		&movie.Title,
@@ -108,10 +119,14 @@ func (m MovieModel) Update(movie *Movie) error {
 		movie.Version, // Agrega la versión de la película esperada.
 	}
 
+	// Create a context with a 3-second timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
 	// Ejecutar la consulta SQL. Si no se pudo encontrar ninguna fila coincidente, conocemos la película.
 	// la versión ha cambiado (o el registro ha sido eliminado) y volvemos a nuestra versión personalizada
 	// Error ErrEditConflict.
-	err := m.BD.QueryRow(query, args...).Scan(&movie.Version)
+	err := m.BD.QueryRowContext(ctx, query, args...).Scan(&movie.Version)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -133,7 +148,11 @@ func (m MovieModel) Delete(id int64) error {
 		DELETE FROM movies
 		WHERE id = $1`
 
-	result, err := m.BD.Exec(query, id)
+	// Create a context with a 3-second timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	result, err := m.BD.ExecContext(ctx, query, id)
 	if err != nil {
 		return err
 	}

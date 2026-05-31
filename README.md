@@ -408,5 +408,6 @@ migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
 | 8.  | Advanced CRUD Operations                              | ✅ |
 | 8.1 | Handling Partial Updates                              | ✅ |
 | 8.2 | Optimistic Concurrency Control                        | ✅ |
+| 8.3 | Managing SQL Query Timeouts                           | ✅ |
 ```
 
