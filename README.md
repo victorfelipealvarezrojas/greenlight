@@ -381,7 +381,7 @@ migrate create -seq -ext .sql -dir ./migrations add_movies_indexes
 ## aplico la nueva migracion
 migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 
-```bash
+```
 
 | Chapter | Topic | Status |
 |---------|-------|--------|
@@ -422,5 +422,6 @@ migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 | 9.  | Parsing Query String Parameters.                      | ✅ |
 | 9.4 | Filtering List                                        | ✅ |
 | 9.5 | Full-Text Search                                      | ✅ |
+| 9.6 | Sorting Lists                                         | ✅ |
 ```
 

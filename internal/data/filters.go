@@ -1,12 +1,35 @@
 package data
 
-import "github.com/valvarez/greenlight/internal/validator"
+import (
+	"strings"
+
+	"github.com/valvarez/greenlight/internal/validator"
+)
 
 type Filters struct {
 	Page         int
 	PageSize     int
 	Sort         string
 	SortSafelist []string
+}
+
+// Verifica que el campo Ordenar proporcionado por el cliente coincida con una de las entradas en nuestra lista segura
+// y si es así, extrae el nombre de la columna del campo Ordenar quitando el encabezado
+func (f Filters) sortColumn() string {
+	for _, safeValue := range f.SortSafelist {
+		if f.Sort == safeValue {
+			return strings.TrimPrefix(f.Sort, "-")
+		}
+	}
+	panic("unsafe sort parameter: " + f.Sort)
+}
+
+// Devuelve la dirección de clasificación ("ASC" o "DESC") dependiendo del carácter de prefijo
+func (f Filters) sortDirection() string {
+	if strings.HasPrefix(f.Sort, "-") {
+		return "DESC"
+	}
+	return "ASC"
 }
 
 func ValidateFilters(v *validator.Validator, f Filters) {
