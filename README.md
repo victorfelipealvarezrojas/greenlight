@@ -191,6 +191,7 @@ docker exec -it progress-db psql -U greenlight -d greenlight
 \du             -- listar roles
 \dx             -- listar extensiones
 \d movies       -- estructura de la tabla
+\dF.            --Lista de configuraciones de búsqueda de texto
 ```
 
 ---
@@ -372,8 +373,15 @@ migrate -path=./migrations -database=$GREENLIGHT_DB_DSN up
 # revertir la última
 migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
 ```
-```
 
+```bash
+## nueva migracion para índices
+migrate create -seq -ext .sql -dir ./migrations add_movies_indexes
+
+## aplico la nueva migracion
+migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
+
+```bash
 
 | Chapter | Topic | Status |
 |---------|-------|--------|
@@ -413,5 +421,6 @@ migrate -path=./migrations -database=$GREENLIGHT_DB_DSN down 1
 | 8.4 | Filtering, Sorting, and Pagination                    | ✅ |
 | 9.  | Parsing Query String Parameters.                      | ✅ |
 | 9.4 | Filtering List                                        | ✅ |
+| 9.5 | Full-Text Search                                      | ✅ |
 ```
 
