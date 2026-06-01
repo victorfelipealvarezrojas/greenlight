@@ -423,5 +423,7 @@ migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 | 9.4 | Filtering List                                        | ✅ |
 | 9.5 | Full-Text Search                                      | ✅ |
 | 9.6 | Sorting Lists                                         | ✅ |
+| 9.7 | Paginating Lists                                      | ✅ |
+| 9.8 | Returning Pagination Metadata                         | ✅ |
 ```
 

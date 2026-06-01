@@ -26,7 +26,7 @@ POST http://localhost:4000/v1/movies
 Content-Type: application/json
 
 {
-  "title": "Bloody Sunday",
+  "title": "Bloody Sunday 2",
   "year": 2002,
   "runtime": "117 mins",
   "genres": ["Action"]
@@ -53,4 +53,4 @@ DELETE http://localhost:4000/v1/movies/2
 GET http://localhost:4000/v1/movies?genres=Action
 
 ### listMoviesHandler
-GET http://localhost:4000/v1/movies?title=The%20Matrix&genres=Action&genres=Sci-Fi&page=1&page_size=20
+GET http://localhost:4000/v1/movies?genres=Action&page=2&page_size=1
