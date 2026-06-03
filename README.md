@@ -383,6 +383,9 @@ migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 
 ```
 
+
+
+
 | Chapter | Topic | Status |
 |---------|-------|--------|
 | 2.1 | Project setup and skeleton structure                  | ✅ |
@@ -425,5 +428,7 @@ migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 | 9.6 | Sorting Lists                                         | ✅ |
 | 9.7 | Paginating Lists                                      | ✅ |
 | 9.8 | Returning Pagination Metadata                         | ✅ |
+| 10. | Rate Limiting.                                        | ✅ |
+| 10.1| Global Rate Limiting.                                 | ✅ |
 ```
 

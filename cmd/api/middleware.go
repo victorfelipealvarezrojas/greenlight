@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"golang.org/x/time/rate" // Importa el paquete rate para implementar limitación de velocidad
 )
 
 // recoverPanic es un middleware que envuelve toda la cadena de ejecución del request.
@@ -38,4 +40,22 @@ func (app *application) recoverPanic(next http.Handler) http.Handler {
 		}()
 		next.ServeHTTP(w, r)
 	})
+}
+
+func (app *application) rateLimit(next http.Handler) http.Handler {
+	// Inicializa un nuevo limitador de velocidad que permite un promedio de 2 solicitudes por segundo,
+	// con un máximo de 4 solicitudes en una sola 'ráfaga'.
+	limiter := rate.NewLimiter(2, 4)
+
+	// La función que devolvemos es un clousure, que 'cierra' el limitador
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Llame a limiter.Allow() para ver si la solicitud está permitida y, si no,
+		// luego llamamos al asistente rateLimitExceededResponse() para devolver 429
+		if !limiter.Allow() {
+			app.rateLimitExceededResponse(w, r)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+
 }

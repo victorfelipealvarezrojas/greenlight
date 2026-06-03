@@ -28,5 +28,6 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/movies", app.listMoviesHandler)
 
 	// recoverPanic no se gatilla en la salida — envuelve toda la ejecución.
-	return app.recoverPanic(router)
+	// rateLimit se gatilla antes de recoverPanic para recuperar de cualquier panic que pueda ocurrir dentro del middleware de limitación de velocidad.
+	return app.recoverPanic(app.rateLimit(router))
 }
