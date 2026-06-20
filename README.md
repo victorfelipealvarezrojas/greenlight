@@ -57,17 +57,19 @@ greenlight/
 
 ### Ejecutar con configuración por defecto
 
-- `go run ./cmd/api`
+- `go run ./cmd/api/ -limiter-burst=2`
 - Arranca el servidor en el puerto `4000`
 - Usa el entorno `development`
 
 ### Ejecutar con parámetros
 
-- `go run ./cmd/api -port=8080 -env=production`
+- `go run ./cmd/api -port=8080 -env=production -db-max-open-conns=50 -db-max-idle-conns=50 -db-max-idle-time=2h30m -limiter-rps=2 -limiter-burst=4 -limiter-enabled=true`
 - Reemplaza `8080` por el puerto deseado
 - Usa el entorno `production`, `staging` o `development`
+- Configura el pool de conexión PostgreSQL con los flags `-db-max-open-conns`, `-db-max-idle-conns` y `-db-max-idle-time`
+- Controla el rate limiter con `-limiter-rps`, `-limiter-burst` y `-limiter-enabled`
 
-> Nota: los flags disponibles son `-port` y `-env`.
+> Nota: los flags disponibles son `-port`, `-env`, `-db-max-open-conns`, `-db-max-idle-conns`, `-db-max-idle-time`, `-limiter-rps`, `-limiter-burst` y `-limiter-enabled`. El DSN de la base de datos se configura mediante la variable de entorno `GREENLIGHT_DB_DSN`.
 
 ## Endpoints
 
@@ -297,6 +299,7 @@ Los valores óptimos dependen del hardware y la carga — requieren benchmarking
 go run ./cmd/api -db-max-open-conns=50 -db-max-idle-conns=50 -db-max-idle-time=2h30m
 
 
+
 ## Migración
 
 ### Concepto
@@ -383,9 +386,6 @@ migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 
 ```
 
-
-
-
 | Chapter | Topic | Status |
 |---------|-------|--------|
 | 2.1 | Project setup and skeleton structure                  | ✅ |
@@ -431,5 +431,6 @@ migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 | 10. | Rate Limiting.                                        | ✅ |
 | 10.1| Global Rate Limiting.                                 | ✅ |
 | 10.2| IP-based Rate Limiting                                | ✅ |
+| 10.3| Configuring the Rate Limiters                         | ✅ |
 ```
 
