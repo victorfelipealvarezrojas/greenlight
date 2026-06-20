@@ -430,5 +430,6 @@ migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 | 9.8 | Returning Pagination Metadata                         | ✅ |
 | 10. | Rate Limiting.                                        | ✅ |
 | 10.1| Global Rate Limiting.                                 | ✅ |
+| 10.2| IP-based Rate Limiting                                | ✅ |
 ```
 
