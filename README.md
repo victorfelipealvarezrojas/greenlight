@@ -511,5 +511,6 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 11. | Graceful Shutdown                                     | ✅ |
 | 11.1| Sending Shutdown Signals                              | ✅ |
 | 11.2| Intercepting Shutdown Signals                         | ✅ |
+| 11.3| Executing the Shutdown                                | ✅ |
 ```
 
