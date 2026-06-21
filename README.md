@@ -386,6 +386,82 @@ migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 
 ```
 
+## Chapter 11 — Graceful Shutdown (Cierre ordenado)
+
+** cómo detener a aplicación en ejecución de forma segura. **
+
+Actualmente, al detener nuestra API (por ejemplo con Ctrl+C) el proceso se termina
+inmediatamente y no se le da oportunidad a las peticiones HTTP en vuelo para finalizar.
+Esto no es ideal por dos razones principales:
+
+- Los clientes no recibirán respuesta a sus peticiones en curso; la conexión se cierra
+  de forma abrupta.
+- El trabajo que estén realizando los handlers puede quedarse incompleto.
+
+Para mitigar estos problemas se añade funcionalidad de cierre ordenado (graceful shutdown)
+para que las peticiones en curso tengan la oportunidad de terminar antes de cerrar la
+aplicación.
+
+- Señales de terminación (shutdown signals): qué son, cómo enviarlas y cómo escucharlas
+  desde la aplicación.
+- Cómo usar estas señales para iniciar un cierre ordenado del servidor HTTP con el método
+  `Shutdown()` de Go.
+
+### 11.1 Envío de señales de terminación
+
+Cuando la aplicación está corriendo, podemos detenerla en cualquier momento enviándole
+una señal específica. Una forma común es pulsar `Ctrl+C` en la terminal para enviar una
+señal de interrupción (`SIGINT`). Pero hay otras señales que también pueden detener la
+aplicación:
+
+| Señal  | Descripción                                      | Atajo teclado | Capturable |
+|--------|--------------------------------------------------|---------------|------------|
+| SIGINT | Interrupción desde teclado                       | Ctrl+C        | Sí         |
+| SIGQUIT| Quit desde teclado                               | Ctrl+\        | Sí         |
+| SIGKILL| Kill (terminación inmediata, no capturable)      | -             | No         |
+| SIGTERM| Terminación ordenada                             | -             | Sí         |
+
+Es importante destacar que algunas señales son capturables y otras no. Las señales
+capturables pueden interceptarse y utilizarse para ejecutar acciones (por ejemplo,
+iniciar un cierre ordenado). Otras, como `SIGKILL`, no pueden interceptarse.
+
+eje:
+
+```bash
+go run ./cmd/api
+```
+```
+time=2023-09-10T10:59:13.722+02:00 level=INFO msg="database connection pool established"
+time=2023-09-10T10:59:13.722+02:00 level=INFO msg="starting server" addr=:4000 env=development
+```
+
+verificar que el proceso `api` está ejecutándose con `pgrep`:
+
+```bash
+pgrep -l api
+```
+
+Si, por ejemplo, envías una señal `SIGKILL` con `pkill -SIGKILL api`, el proceso se
+terminará de forma inmediata y en la salida se vera `signal: killed`.
+
+```bash
+pkill -SIGKILL api
+```
+
+Si en su lugar envías `SIGTERM`:
+
+```bash
+pkill -SIGTERM api
+```
+
+verás `signal: terminated` al terminar la ejecución. También puedes probar `SIGQUIT`
+(Ctrl+\) para provocar una salida con volcado de stack.
+
+Todas estas señales pueden hacer que la aplicación termine de forma inmediata. Para evitar
+esto, Go ofrece el paquete `os/signal`, que nos permite interceptar señales capturables
+y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
+
+
 | Chapter | Topic | Status |
 |---------|-------|--------|
 | 2.1 | Project setup and skeleton structure                  | ✅ |
@@ -432,5 +508,8 @@ migrate -path ./migrations -database $GREENLIGHT_DB_DSN up
 | 10.1| Global Rate Limiting.                                 | ✅ |
 | 10.2| IP-based Rate Limiting                                | ✅ |
 | 10.3| Configuring the Rate Limiters                         | ✅ |
+| 11. | Graceful Shutdown                                     | ✅ |
+| 11.1| Sending Shutdown Signals                              | ✅ |
+| 11.2| Intercepting Shutdown Signals                         | ✅ |
 ```
 
