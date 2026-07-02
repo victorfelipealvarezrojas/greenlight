@@ -512,5 +512,7 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 11.1| Sending Shutdown Signals                              | ✅ |
 | 11.2| Intercepting Shutdown Signals                         | ✅ |
 | 11.3| Executing the Shutdown                                | ✅ |
+| 12. | User Model Setup and Registration                     | ✅ |
+| 12.1| Setting up the Users Database Table                   | ✅ |
 ```
 

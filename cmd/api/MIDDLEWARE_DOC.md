@@ -1,3 +1,25 @@
+## recoverPanic — Middleware de recuperación de pánicos
+
+`recoverPanic` envuelve toda la cadena de ejecución de la request usando un `defer` con `recover()`.
+
+- Captura panics inesperados que ocurran en cualquier middleware o handler siguiente.
+- Si ocurre un panic, fuerza el header `Connection: close` y responde con un error 500 interno.
+- Esto evita que la goroutine termine silenciosamente sin responder al cliente.
+- `recover()` solo atrapa panics; los errores normales de Go (`err != nil`) deben manejarse como valores de retorno.
+
+el recover automático de net/http es genérico y básico — cierra la conexión abruptamente sin darle al cliente una respuesta HTTP estructurada. 
+Lo que el cliente recibe, sin el middleware, es una conexión cortada de golpe (posiblemente un error de conexión reset, sin cuerpo, sin código 
+de estado claro) — una experiencia fea e inconsistente con el resto de la API.
+
+En `routes.go` el orden importa:
+
+- `app.rateLimitWithIP(router)` se monta primero.
+- `app.recoverPanic(...)` envuelve ese resultado.
+
+Por eso, un panic dentro del middleware de limitación de velocidad también queda atrapado por `recoverPanic`.
+
+---
+
 ## Rate Limiting — Middleware de limitación de velocidad
 
 ### Librería
@@ -157,3 +179,5 @@ if !c.limiter.Allow() {
 
 ### Limitación de v2
 El límite ahora es por IP, pero el mapa crece sin tope superior salvo por la limpieza cada minuto — bajo un ataque de IPs falsificadas (`X-Forwarded-For` sin validar, o `RemoteAddr` spoofeado en entornos sin proxy de confianza) el mapa puede crecer agresivamente entre limpiezas.
+
+
