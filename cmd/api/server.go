@@ -41,7 +41,7 @@ func (app *application) serve() error {
 		// error (que puede ocurrir debido a un problema al cerrar los oyentes, o
 		// porque el cierre no se completó antes de que venciera la fecha límite de contexto de 30 segundos
 		// golpe). Transmitimos este valor de retorno al canal ShutdownError.
-		shutdownError <- srv.Shutdown(ctx)
+		shutdownError <- srv.Shutdown(ctx) // hutdown() en sí sigue corriendo en su propia goroutine, terminando de esperar las requests activas.
 	}()
 
 	app.logger.Info("starting server", "addr", srv.Addr, "env", app.config.env)
@@ -50,6 +50,14 @@ func (app *application) serve() error {
 	// algo bueno y una indicación de que ha comenzado el cierre elegante. Entonces comprobamos
 	// específicamente para esto, solo devuelve el error si NO es http.ErrServerClosed.
 	err := srv.ListenAndServe()
+	// ErrServerClosed es el cierre esperado, causado por Shutdown().
+	// Al cerrar el listener, Shutdown() libera este bloqueo de ListenAndServe(),
+	// pero Shutdown() en su propia goroutine sigue esperando que terminen las
+	// requests activas — todavía no terminó su trabajo.
+	// Por eso más abajo bloqueo el hilo principal con err = <-shutdownError:
+	// sin ese bloqueo, main() seguiría su curso y el proceso podría terminar
+	// antes de que Shutdown() alcance a drenar esas requests en curso.
+	// El bloqueo se libera recién cuando Shutdown(ctx) termina y emite a shutdownError desde la go rutine.
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
