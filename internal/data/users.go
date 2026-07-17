@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/lib/pq"
 	"github.com/valvarez/greenlight/internal/validator"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -93,9 +94,11 @@ func (m UserModel) Insert(user *User) error {
 	defer cancel()
 
 	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.ID, &user.CreatedAt, &user.Version)
+
 	if err != nil {
+		var pqErr *pq.Error
 		switch {
-		case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
+		case errors.As(err, &pqErr) && pqErr.Code == "23505" && pqErr.Constraint == "users_email_key":
 			return ErrDuplicateEmail
 		default:
 			return err
