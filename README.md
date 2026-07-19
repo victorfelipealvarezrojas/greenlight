@@ -522,5 +522,6 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 12.1    | Setting up the Users Database Table        | ✅ |
 | 12.2    | Setting up the Users Model                 | ✅ |
 | 12.3    | Registering a User                         | ✅ |
+| 13      | Sending Emails                             | ✅ |
 ```
 
