@@ -26,7 +26,7 @@ func (app *application) serve() error {
 	shutdownError := make(chan error)
 
 	go func() {
-		quit := make(chan os.Signal, 1) // make inicializa un objeto de tipo channel, slice o mapa
+		quit := make(chan os.Signal, 1) // make inicializa un objeto de tipo channel
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		s := <-quit
 
@@ -36,35 +36,25 @@ func (app *application) serve() error {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
-		// Llama a Shutdown() en nuestro servidor, pasando el contexto que acabamos de crear.
-		// Shutdown() devolverá nil si el cierre elegante fue exitoso, o un
-		// error (que puede ocurrir debido a un problema al cerrar los oyentes, o
-		// porque el cierre no se completó antes de que venciera la fecha límite de contexto de 30 segundos
-		// golpe). Transmitimos este valor de retorno al canal ShutdownError.
-		shutdownError <- srv.Shutdown(ctx) // hutdown() en sí sigue corriendo en su propia goroutine, terminando de esperar las requests activas.
+		err := srv.Shutdown(ctx)
+		if err != nil {
+			shutdownError <- err
+		}
+
+		app.logger.Info("completing background tasks", "addr", srv.Addr)
+
+		app.wg.Wait()
+		shutdownError <- nil
+
 	}()
 
 	app.logger.Info("starting server", "addr", srv.Addr, "env", app.config.env)
-	// Llamar a Shutdown() en nuestro servidor hará que ListenAndServe() inmediatamente
-	// devuelve un error http.ErrServerClosed. Entonces, si vemos este error, en realidad es un
-	// algo bueno y una indicación de que ha comenzado el cierre elegante. Entonces comprobamos
-	// específicamente para esto, solo devuelve el error si NO es http.ErrServerClosed.
+
 	err := srv.ListenAndServe()
-	// ErrServerClosed es el cierre esperado, causado por Shutdown().
-	// Al cerrar el listener, Shutdown() libera este bloqueo de ListenAndServe(),
-	// pero Shutdown() en su propia goroutine sigue esperando que terminen las
-	// requests activas — todavía no terminó su trabajo.
-	// Por eso más abajo bloqueo el hilo principal con err = <-shutdownError:
-	// sin ese bloqueo, main() seguiría su curso y el proceso podría terminar
-	// antes de que Shutdown() alcance a drenar esas requests en curso.
-	// El bloqueo se libera recién cuando Shutdown(ctx) termina y emite a shutdownError desde la go rutine.
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 
-	// De lo contrario, esperamos recibir el valor de retorno de Shutdown() en el
-	// apagadoError canal. Si el valor de retorno es un error, sabemos que hubo un
-	// problema con el apagado elegante y devolvemos el error.
 	err = <-shutdownError
 	if err != nil {
 		return err
