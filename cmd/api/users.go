@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/valvarez/greenlight/internal/data"
 	"github.com/valvarez/greenlight/internal/validator"
@@ -51,8 +52,20 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// Después de que se haya creado el registro de usuario en la base de datos, generamos una activation token
+	tkn, err := app.models.Tkn.New(user.ID, 3*24*time.Hour, data.ScopeActivation)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
 	app.background(func() {
-		err = app.mailer.Send(user.Email, "user_welcome.tmpl", user)
+		dataWithTkn := map[string]any{
+			"userID":          user.ID,
+			"activationToken": tkn.Plaintext,
+		}
+
+		err = app.mailer.Send(user.Email, "user_welcome.tmpl", dataWithTkn)
 		if err != nil {
 			app.logger.Error(err.Error())
 		}

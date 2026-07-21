@@ -529,5 +529,6 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 14      | User Activation                            | ✅ |
 | 14.1    | Setting up the Tokens Database Table       | ✅ |
 | 14.2    | Creating Secure Activation Tokens          | ✅ |
+| 14.3    | Sending Activation Tokens                  | ✅ |
 ```
 

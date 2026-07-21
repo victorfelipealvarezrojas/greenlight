@@ -30,7 +30,6 @@ func generateToken(userID int64, ttl time.Duration, scope string) (*Token, error
 		Scope:  scope,
 	}
 
-	// Inicializa un slice de bytes de valor cero con una longitud de 16 bytes.
 	randomBytes := make([]byte, 16)
 
 	_, err := rand.Read(randomBytes)
@@ -40,18 +39,13 @@ func generateToken(userID int64, ttl time.Duration, scope string) (*Token, error
 
 	// Codifica el segmento de bytes en una cadena codificada en base 32 y asígnalo al token
 	// Campo de texto sin formato. Esta será la cadena token que enviaremos al usuario en su
-	// correo electrónico de bienvenida. Se verán similares a este:
-	//
-	// Y3QMGX3PJ3WLRL2YRTQGQ6KRHU
-	//
+	// correo electrónico de bienvenida.
 	// las cadenas en base 32 se pueden rellenar al final con =
 	// y No necesitamos este carácter de relleno para nuestros tokens, así que
-	// utilizamos el metodo WithPadding(base32.NoPadding) en la línea siguiente para omitirlos.
+	// utilizamos el metodo WithPadding(base32.NoPadding) para omitirlos.
 	token.Plaintext = base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(randomBytes)
 	// Genera un hash SHA-256 de la cadena del token en texto plano. este sera el valor
-	// que almacenamos en el campo `hash` de nuestra tabla de base de datos. Tenga en cuenta que el
-	// la función sha256.Sum256() devuelve una *matriz* de longitud 32, para que sea más fácil
-	// trabajamos con él, lo convertimos en un slice usando el operador [:] antes de almacenarlo.
+	// que almacenamos en el campo `hash` de nuestra tabla de base de datos.
 	hash := sha256.Sum256([]byte(token.Plaintext))
 	token.Hash = hash[:]
 
