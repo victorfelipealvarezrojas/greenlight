@@ -29,6 +29,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/v1/users", app.registerUserHandler)
 	router.HandlerFunc(http.MethodPut, "/v1/users/activated", app.activateUserHandler)
 
+	router.HandlerFunc(http.MethodPost, "/v1/tokens/authentication", app.createAuthenticationTokenHandler)
+
 	// recoverPanic no se gatilla en la salida — envuelve toda la ejecución.
 	// rateLimit se gatilla antes de recoverPanic para recuperar de cualquier panic que pueda ocurrir dentro del middleware de limitación de velocidad.
 	return app.recoverPanic(app.rateLimitWithIP(router))

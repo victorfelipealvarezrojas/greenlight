@@ -1,0 +1,33 @@
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go build/vendor
+vendor/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# IDE - JetBrains (GoLand/IntelliJ)
+.idea/
+
+# IDE - VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local override configs
+*.local

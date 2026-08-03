@@ -81,7 +81,7 @@ func (app *application) activateUserHandler(w http.ResponseWriter, r *http.Reque
 	var input struct {
 		TokenPlaintext string `json:"token"`
 	}
-	err := app.readJSON(w, r, input)
+	err := app.readJSON(w, r, &input)
 
 	if err != nil {
 		app.badRequestResponse(w, r, err)
