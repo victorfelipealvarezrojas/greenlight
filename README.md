@@ -534,5 +534,6 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 15      | Authentication                             | ✅ |
 | 15.1    | Authentication Options                     | ✅ |
 | 15.2    | Generating Authentication Tokens           | ✅ |
+| 15.3    | Authenticating Requests.                   | ✅ |
 ```
 

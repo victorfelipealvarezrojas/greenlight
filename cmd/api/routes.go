@@ -33,5 +33,5 @@ func (app *application) routes() http.Handler {
 
 	// recoverPanic no se gatilla en la salida — envuelve toda la ejecución.
 	// rateLimit se gatilla antes de recoverPanic para recuperar de cualquier panic que pueda ocurrir dentro del middleware de limitación de velocidad.
-	return app.recoverPanic(app.rateLimitWithIP(router))
+	return app.recoverPanic(app.rateLimit(app.authenticate(router)))
 }

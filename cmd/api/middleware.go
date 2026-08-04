@@ -1,12 +1,16 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/valvarez/greenlight/internal/data"
+	"github.com/valvarez/greenlight/internal/validator"
 	"golang.org/x/time/rate" // Importa el paquete rate para implementar limitación de velocidad
 )
 
@@ -100,6 +104,67 @@ func (app *application) rateLimitWithIP(next http.Handler) http.Handler {
 
 }
 
+func (app *application) authenticate(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		// Agregue el encabezado "Vary: Authorization" a la respuesta. Esto indica a cualquier
+		// almacena en caché que la respuesta puede variar según el valor de la Autorización
+		// encabezado en la solicitud.
+		w.Header().Add("Vary", "Authorization")
+
+		// Recupera el valor del encabezado de Autorización de la solicitud. esto será
+		// devuelve la cadena vacía "" si no se encuentra dicho encabezado.
+		authorizationHeader := r.Header.Get("Authorization")
+
+		// Si no se encuentra ningún encabezado de Autorización, use el asistente contextSetUser()
+		// que acabamos de hacer para agregar AnonymousUser al contexto de solicitud.
+		// entonces llama al siguiente controlador de la cadena y regresa sin ejecutar ninguno de los
+		// código a continuación.
+		if authorizationHeader == "" {
+			r = app.contextSetUser(r, data.AnonymousUser)
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// De lo contrario, esperamos que el valor del encabezado de Autorización tenga el formato
+		// Bearer <token>. Intentamos dividir esto en sus partes constituyentes, y si el
+		// el encabezado no tiene el formato esperado, devolvemos una respuesta 401 no autorizada
+		// usando el asistente invalidAuthenticationTokenResponse() (que crearemos
+		// en un momento).
+		headerParts := strings.Split(authorizationHeader, " ")
+		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+			app.invalidAuthenticationTokenResponse(w, r)
+			return
+		}
+
+		token := headerParts[1]
+
+		v := validator.New()
+		if data.ValidateTokenPlaintext(v, token); !v.Valid() {
+			app.invalidAuthenticationTokenResponse(w, r)
+			return
+		}
+
+		// Retrieve the details of the user associated with the authentication token,
+		// again calling the invalidAuthenticationTokenResponse() helper if no
+		// matching record was found. IMPORTANT: Notice that we are using
+		// ScopeAuthentication as the first parameter here.
+		user, err := app.models.Usr.GetForToken(data.ScopeAuthentication, token)
+		if err != nil {
+			switch {
+			case errors.Is(err, data.ErrRecordNotFound):
+				app.invalidAuthenticationTokenResponse(w, r)
+			default:
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+
+		r = app.contextSetUser(r, user)
+		next.ServeHTTP(w, r)
+	})
+}
+
 // Deprecated: usa rateLimit, que aplica el límite por IP.
 func (app *application) rateLimit(next http.Handler) http.Handler {
 	// Inicializa un nuevo limitador de velocidad que permite un promedio de 2 solicitudes por segundo,
@@ -116,5 +181,4 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
-
 }
