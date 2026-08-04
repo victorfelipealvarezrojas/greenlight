@@ -165,6 +165,33 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 	})
 }
 
+// Crea un nuevo middleware requireAuthenticatedUser() para comprobar que un usuario no está
+// anónimo.
+func (app *application) requireAuthenticatedUser(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := app.contextGetUser(r)
+		if user.IsAnonymous() {
+			app.authenticationRequiredResponse(w, r)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (app *application) requireActivatedUser(next http.HandlerFunc) http.HandlerFunc {
+	// En lugar de devolver este http.HandlerFunc, lo asignamos a la variable fn.
+	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := app.contextGetUser(r)
+		if !user.Activated {
+			app.inactiveAccountResponse(w, r)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+	// Envuelve fn con el middleware requireAuthenticatedUser() antes de devolverlo.
+	return app.requireAuthenticatedUser(fn)
+}
+
 // Deprecated: usa rateLimit, que aplica el límite por IP.
 func (app *application) rateLimit(next http.Handler) http.Handler {
 	// Inicializa un nuevo limitador de velocidad que permite un promedio de 2 solicitudes por segundo,

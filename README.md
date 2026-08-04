@@ -535,5 +535,7 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 15.1    | Authentication Options                     | ✅ |
 | 15.2    | Generating Authentication Tokens           | ✅ |
 | 15.3    | Authenticating Requests.                   | ✅ |
+| 16.     | Permission-based Authorization.            | ✅ |
+| 16.1     | Requiring User Activation.                | ✅ |
 ```
 

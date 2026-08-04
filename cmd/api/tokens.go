@@ -51,10 +51,10 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 		return
 	}
 
-	if !user.Activated {
+	/*if !user.Activated {
 		app.inactiveAccountResponse(w, r)
 		return
-	}
+	}*/
 
 	tkn, err := app.models.Tkn.New(user.ID, 24*time.Hour, data.ScopeAuthentication)
 	if err != nil {

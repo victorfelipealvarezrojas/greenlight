@@ -9,22 +9,23 @@ import (
 func (app *application) routes() http.Handler {
 	router := httprouter.New()
 
-	// Convert the notFoundResponse() helper to a http.Handler using the
-	// http.HandlerFunc() adapter, and then set it as the custom error handler for 404
-	// Not Found responses.
+	// Convierte el asistente notFoundResponse() en http.Handler usando el
+	// adaptador http.HandlerFunc() y luego se configura como el controlador de errores personalizado para 404
+	// Respuestas no encontradas.
 	router.NotFound = http.HandlerFunc(app.notFoundResponse)
 
-	// Likewise, convert the methodNotAllowedResponse() helper to a http.Handler and set
-	// it as the custom error handler for 405 Method Not Allowed responses.
+	// Del mismo modo, convierte el asistente métodoNotAllowedResponse() en http.Handler y configura
+	// como controlador de errores personalizado para las respuestas 405 Método no permitido.
 	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
 
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
 
-	router.HandlerFunc(http.MethodPost, "/v1/movies", app.createMovieHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/movies/:id", app.showMovieHandler)
-	router.HandlerFunc(http.MethodPut, "/v1/movies/:id", app.updateMovieHandler)
-	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.deleteMovieHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/movies", app.listMoviesHandler)
+	// middleware requireActivatedUser() en /v1/movies**
+	router.HandlerFunc(http.MethodPost, "/v1/movies", app.requireActivatedUser(app.createMovieHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/movies/:id", app.requireActivatedUser(app.showMovieHandler))
+	router.HandlerFunc(http.MethodPut, "/v1/movies/:id", app.requireActivatedUser(app.updateMovieHandler))
+	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.requireActivatedUser(app.deleteMovieHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/movies", app.requireActivatedUser(app.listMoviesHandler))
 
 	router.HandlerFunc(http.MethodPost, "/v1/users", app.registerUserHandler)
 	router.HandlerFunc(http.MethodPut, "/v1/users/activated", app.activateUserHandler)

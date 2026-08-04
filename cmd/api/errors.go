@@ -66,6 +66,11 @@ func (app *application) inactiveAccountResponse(w http.ResponseWriter, r *http.R
 	app.errorResponse(w, r, http.StatusForbidden, message)
 }
 
+func (app *application) authenticationRequiredResponse(w http.ResponseWriter, r *http.Request) {
+	message := "you must be authenticated to access this resource"
+	app.errorResponse(w, r, http.StatusUnauthorized, message)
+}
+
 // WWW-Authenticate: Bearer le está diciendo al cliente "para acceder a esto necesitás autenticarte, y el esquema es Bearer"
 // — o sea, un token en el header Authorization: Bearer <token>. Es la contraparte del flujo: el cliente manda
 // Authorization: Bearer xxx, y si el token es inválido o falta, el servidor responde 401 y en el WWW-Authenticate recuerda cuál era el esquema esperado.
