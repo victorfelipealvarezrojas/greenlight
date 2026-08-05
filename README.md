@@ -73,18 +73,17 @@ greenlight/
 
 ## Endpoints
 
-**Health**
-| Method | URL | Action |
-|--------|-----|--------|
-| GET | /v1/healthcheck | Show application information |
-
-**Movies**
-| Method | URL | Action |
-|--------|-----|--------|
-| POST | /v1/movies | Create a new movie |
-| GET | /v1/movies/:id | Show a specific movie |
-| PUT | /v1/movies/:id | Update an existing movie |
-| DELETE | /v1/movies/:id | Delete a movie |
+| Method | URL Pattern | Required permission |
+|--------|-------------|----------------------|
+| GET | /v1/healthcheck | — |
+| GET | /v1/movies | movies:read |
+| POST | /v1/movies | movies:write |
+| GET | /v1/movies/:id | movies:read |
+| PATCH | /v1/movies/:id | movies:write |
+| DELETE | /v1/movies/:id | movies:write |
+| POST | /v1/users | — |
+| PUT | /v1/users/activated | — |
+| POST | /v1/tokens/authentication | — |
 
 
 ## Progress
@@ -536,6 +535,7 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 15.2    | Generating Authentication Tokens           | ✅ |
 | 15.3    | Authenticating Requests.                   | ✅ |
 | 16.     | Permission-based Authorization.            | ✅ |
-| 16.1     | Requiring User Activation.                | ✅ |
+| 16.1    | Requiring User Activation.                 | ✅ |
+| 16.2    | Setting up the Permissions Database Table  | ✅ |
 ```
 

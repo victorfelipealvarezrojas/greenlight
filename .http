@@ -94,4 +94,4 @@ Content-Type: application/json
 
 ###PROTECTED_RESOURCED
 GET http://localhost:4000/v1/movies/4
-Authorization: Bearer Z43YMKS3BFRIBSR2VE364ACV7M
+Authorization: Bearer 4V2TUKAQELMY7RNQ7RRLXKUW5E
