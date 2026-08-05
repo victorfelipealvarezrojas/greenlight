@@ -537,5 +537,7 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 16.     | Permission-based Authorization.            | ✅ |
 | 16.1    | Requiring User Activation.                 | ✅ |
 | 16.2    | Setting up the Permissions Database Table  | ✅ |
+| 16.3    | Setting up the Permissions Mode.           | ✅ |
+
 ```
 
