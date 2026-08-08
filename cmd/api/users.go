@@ -52,7 +52,14 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// Después de que se haya creado el registro de usuario en la base de datos, generamos una activation token
+	// Agrega el permiso "movies:read" para el nuevo usuario.
+	err = app.models.Permissions.AddForUser(user.ID, "movies:read")
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// Despues de que se haya creado el registro de usuario en la base de datos, generamos una activation token
 	tkn, err := app.models.Tkn.New(user.ID, 3*24*time.Hour, data.ScopeActivation)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
