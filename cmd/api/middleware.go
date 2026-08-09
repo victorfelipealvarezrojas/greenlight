@@ -231,3 +231,33 @@ func (app *application) requirePermission(code string, next http.HandlerFunc) ht
 	// Envuelva esto con el middleware requireActivatedUser() antes de devolverlo.
 	return app.requireActivatedUser(fn)
 }
+
+func (app *application) enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Vary", "Origin")
+		// Agregue el encabezado "Vary: Access-Control-Request-Method".
+		w.Header().Add("Vary", "Access-Control-Request-Method")
+		origin := r.Header.Get("Origin")
+		if origin != "" {
+			for i := range app.config.cors.trustedOrigins {
+				if origin == app.config.cors.trustedOrigins[i] {
+					w.Header().Set("Access-Control-Allow-Origin", origin)
+					// Comprobar si la solicitud tiene el método HTTP OPTIONS y contiene el
+					// Encabezado "Access-Control-Request-Method". Si es así, entonces tratamos
+					// como una solicitud de verificación previa.
+					if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
+						// Establece los encabezados de respuesta de verificación previa
+						w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, PUT, PATCH, DELETE")
+						w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+						// Escribe los encabezados junto con un estado 200 OK y regresa de
+						// el middleware sin ninguna acción adicional.
+						w.WriteHeader(http.StatusOK)
+						return
+					}
+					break
+				}
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
+}

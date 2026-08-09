@@ -539,5 +539,11 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 16.2    | Setting up the Permissions Database Table  | ✅ |
 | 16.3    | Setting up the Permissions Mode.           | ✅ |
 | 16.4    | Checking Permissions.                      | ✅ |
+| 17      | Cross Origin Requests.                     | ✅ |
+| 17.1    | An Overview of CORS.                       | ✅ |
+| 17.2    | Demonstrating the Same-Origin Policy       | ✅ |
+| 17.4    | Preflight CORS Requests.                   | ✅ |
 ```
+
+
 
