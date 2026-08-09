@@ -543,6 +543,12 @@ y, por ejemplo, lanzar un cierre ordenado del servidor HTTP usando `Shutdown()`.
 | 17.1    | An Overview of CORS.                       | ✅ |
 | 17.2    | Demonstrating the Same-Origin Policy       | ✅ |
 | 17.4    | Preflight CORS Requests.                   | ✅ |
+| 18      | Metrics.                                   | ✅ |
+| 18.2    | Creating Custom Metrics.                   | ✅ |
+| 19      | Building, Versioning and Quality Control.  | ✅ |
+| 19.1    | Creating and Using Makefiles.              | ✅ |
+| 19.2    | Managing Environment Variables.            | ✅ |
+
 ```
 
 

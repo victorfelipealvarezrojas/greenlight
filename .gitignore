@@ -31,3 +31,4 @@ Thumbs.db
 
 # Local override configs
 *.local
+.envrc
