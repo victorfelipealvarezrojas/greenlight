@@ -1,0 +1,110 @@
+# API Greenlight — HTTP Requests
+# Requiere extensión REST Client en VSCode (humao.rest-client)
+# Ejecutar: click en "Send Request" sobre cada bloque
+# Base URL Default: http://localhost:4000
+# ---
+
+### Healthcheck
+GET http://localhost:4000/v1/healthcheck
+
+### Method Not Allowed
+POST http://localhost:4000/v1/healthcheck
+
+### createMovieHandler
+POST http://localhost:4000/v1/movies
+Content-Type: application/json
+
+{
+  "title": "The Breakfast Club",
+  "year": 1986,
+  "runtime": "96 mins",
+  "genres": ["Drama"]
+}
+
+### createMovieHandlerError
+POST http://localhost:4000/v1/movies
+Content-Type: application/json
+
+{
+  "title": "Bloody Sunday 2",
+  "year": 2002,
+  "runtime": "117 mins",
+  "genres": ["Action"]
+}
+
+### showMovieHandler
+GET http://localhost:4000/v1/movies/4
+
+### updateMovieHandler
+PUT http://localhost:4000/v1/movies/3
+Content-Type: application/json
+
+{
+  "title": "The Matrix",
+  "year": 1999,
+  "runtime": "136 mins",
+  "genres": ["Action", "Sci-Fi"]
+}
+
+### deleteMovieHandler
+DELETE http://localhost:4000/v1/movies/2
+
+### listMoviesHandler
+GET http://localhost:4000/v1/movies?genres=Action
+
+### listMoviesHandler
+GET http://localhost:4000/v1/movies?genres=Action&page=2&page_size=1
+
+
+### createUser
+POST http://localhost:4000/v1/users
+Content-Type: application/json
+
+{
+  "name": "inactive_user",
+  "email": "inactive_user@gmail.com",
+  "password": "val1234#"
+}
+
+### activateUser
+PUT http://localhost:4000/v1/users/activated
+Content-Type: application/json
+
+{
+  "token": "T62DQVKOJHMH62PT5YBXOLCXVE"
+}
+
+### authentication active user
+POST http://localhost:4000/v1/tokens/authentication
+Content-Type: application/json
+
+{
+  "email": "victor.alvarez.rojas2024@gmail.com", 
+  "password": "val1234#"
+}
+
+### authentication inactive user
+POST http://localhost:4000/v1/tokens/authentication
+Content-Type: application/json
+
+{
+  "email": "inactive_user@gmail.com", 
+  "password": "val1234#"
+}
+
+###PROTECTED_RESOURCED
+GET http://localhost:4000/v1/movies/4
+Authorization: Bearer GZCLUC4VXWGYRIXEJ3Q4USERJE
+
+
+###SAVE_AUTH
+POST http://localhost:4000/v1/movies
+Content-Type: application/json
+Authorization: Bearer GZCLUC4VXWGYRIXEJ3Q4USERJE
+
+{
+  "title": "Bloody Sunday 4",
+  "year": 2026,
+  "runtime": "117 mins",
+  "genres": ["Action"]
+}

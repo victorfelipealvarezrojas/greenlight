@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: progress-db
+    environment:
+      POSTGRES_DB: greenlight
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pass12345
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+
+volumes:
+  db-data:
